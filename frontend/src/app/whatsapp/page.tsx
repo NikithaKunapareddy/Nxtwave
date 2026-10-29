@@ -425,42 +425,42 @@ export default function WhatsAppPage() {
         <div className="lg:col-span-5 space-y-5">
 
           {/* Cloud API Status Card */}
-          <div className="p-6 rounded-3xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-emerald-500/30 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400">
+          <div className="p-6 rounded-3xl bg-gradient-to-b from-white via-slate-50 to-white dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 border border-emerald-500/30 shadow-xl dark:shadow-2xl space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-white/10">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                 META CLOUD API INTEGRATION
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
                 <span>LIVE / READY</span>
               </span>
             </div>
 
-            <h3 className="text-lg font-bold text-white">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
               Official WhatsApp Webhook Active
             </h3>
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               Configured on Meta for Developers with webhook verification, SHA-256 HMAC signature security, and automated rate-limiting.
             </p>
 
-            <div className="space-y-2 pt-2 border-t border-white/10 text-xs">
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-slate-400">Phone Number ID:</span>
-                <span className="font-mono text-indigo-300 font-bold">1171374816059824</span>
+            <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/10 text-xs">
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
+                <span className="text-slate-500 dark:text-slate-400">Phone Number ID:</span>
+                <span className="font-mono text-indigo-600 dark:text-indigo-300 font-bold">1171374816059824</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-white/5">
-                <span className="text-slate-400">Test Allowed Number:</span>
-                <span className="font-mono text-emerald-400 font-bold">+91 93904 71597</span>
+              <div className="flex justify-between py-1 border-b border-slate-100 dark:border-white/5">
+                <span className="text-slate-500 dark:text-slate-400">Test Allowed Number:</span>
+                <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">+91 93904 71597</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-400">AI Intelligence Engine:</span>
-                <span className="font-mono text-cyan-300 font-bold">Google Gemini 2.5 Flash</span>
+                <span className="text-slate-500 dark:text-slate-400">AI Intelligence Engine:</span>
+                <span className="font-mono text-cyan-600 dark:text-cyan-300 font-bold">Google Gemini 2.5 Flash</span>
               </div>
             </div>
 
             <button
               onClick={() => openWhatsAppDirect()}
-              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/30 transition active:scale-95"
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/30 transition active:scale-95 cursor-pointer"
             >
               <Smartphone className="w-4 h-4" />
               <span>Launch WhatsApp On Your Phone →</span>
@@ -468,35 +468,35 @@ export default function WhatsAppPage() {
           </div>
 
           {/* Interactive Command Syntax Guide */}
-          <div className="p-6 rounded-3xl bg-slate-900/60 border border-white/10 space-y-4">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-indigo-400" />
+          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-none space-y-4">
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <span>Supported Conversational Commands</span>
             </h4>
 
             <div className="space-y-2.5 text-xs">
               <div
                 onClick={() => handleSendMessage("compare: College Policy Bot vs Plant Vision")}
-                className="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer transition"
+                className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 cursor-pointer transition shadow-xs"
               >
-                <div className="font-mono font-bold text-emerald-400">compare: Idea A vs Idea B</div>
-                <div className="text-slate-400 mt-0.5 text-[11px]">Calculates 6-criteria feasibility matrix and ranks the winner.</div>
+                <div className="font-mono font-bold text-emerald-600 dark:text-emerald-400">compare: Idea A vs Idea B</div>
+                <div className="text-slate-600 dark:text-slate-400 mt-0.5 text-[11px]">Calculates 6-criteria feasibility matrix and ranks the winner.</div>
               </div>
 
               <div
                 onClick={() => handleSendMessage("contract: Academic Document RAG Assistant")}
-                className="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer transition"
+                className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 cursor-pointer transition shadow-xs"
               >
-                <div className="font-mono font-bold text-cyan-400">contract: Project Concept</div>
-                <div className="text-slate-400 mt-0.5 text-[11px]">Generates 60-min build milestones, ₹0 tech stack, and failure tests.</div>
+                <div className="font-mono font-bold text-cyan-600 dark:text-cyan-400">contract: Project Concept</div>
+                <div className="text-slate-600 dark:text-slate-400 mt-0.5 text-[11px]">Generates 60-min build milestones, ₹0 tech stack, and failure tests.</div>
               </div>
 
               <div
                 onClick={() => handleSendMessage("break: Academic Document RAG Assistant")}
-                className="p-3.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 cursor-pointer transition"
+                className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 cursor-pointer transition shadow-xs"
               >
-                <div className="font-mono font-bold text-amber-400">break: Project Concept</div>
-                <div className="text-slate-400 mt-0.5 text-[11px]">Submits edge cases and tests for viva-ending assumption traps.</div>
+                <div className="font-mono font-bold text-amber-600 dark:text-amber-400">break: Project Concept</div>
+                <div className="text-slate-600 dark:text-slate-400 mt-0.5 text-[11px]">Submits edge cases and tests for viva-ending assumption traps.</div>
               </div>
             </div>
           </div>

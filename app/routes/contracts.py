@@ -15,6 +15,7 @@ from app.schemas import (
 from app.services.contract_planner import generate_build_contract_data
 from app.security import verify_rate_limit, sanitize_string
 from app.analytics import record_event
+from app.config import settings
 from app.supabase_client import (
     supabase_save_contract,
     supabase_get_contract,
@@ -27,7 +28,7 @@ router = APIRouter(prefix="/api/contracts", tags=["Build Contracts"])
 
 def serialize_contract_model(contract: BuildContract, req: Request) -> BuildContractResponse:
     """Helper to convert SQLAlchemy BuildContract model to Pydantic response schema."""
-    base_url = str(req.base_url).rstrip("/")
+    base_url = (settings.FRONTEND_URL or str(req.base_url)).rstrip("/")
     failure_scenarios = [FailureScenario(**item) for item in contract.get_failure_scenarios()]
     plan_60min = [Plan60MinMilestone(**item) for item in contract.get_plan_60min()]
 
@@ -61,7 +62,7 @@ def serialize_contract_model(contract: BuildContract, req: Request) -> BuildCont
 
 def serialize_contract_dict(d: dict, req: Request) -> BuildContractResponse:
     """Helper to convert Supabase contract dict to Pydantic response schema."""
-    base_url = str(req.base_url).rstrip("/")
+    base_url = (settings.FRONTEND_URL or str(req.base_url)).rstrip("/")
     scenarios_raw = d.get("failure_scenarios_json", "[]")
     if isinstance(scenarios_raw, str):
         try:

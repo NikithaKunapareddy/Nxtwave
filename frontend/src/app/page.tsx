@@ -132,18 +132,18 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#07090e] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
-      
+    <div className="relative min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30 selection:text-indigo-600 dark:selection:text-indigo-200">
+
       {/* ── BACKGROUND AURORA MESH ─────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] rounded-full bg-indigo-600/[0.08] blur-[140px]" />
-        <div className="absolute top-[35%] right-[-15%] w-[650px] h-[650px] rounded-full bg-purple-600/[0.06] blur-[150px]" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-cyan-500/[0.05] blur-[130px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] rounded-full bg-indigo-500/[0.06] dark:bg-indigo-600/[0.08] blur-[140px]" />
+        <div className="absolute top-[35%] right-[-15%] w-[650px] h-[650px] rounded-full bg-purple-500/[0.05] dark:bg-purple-600/[0.06] blur-[150px]" />
+        <div className="absolute bottom-[-10%] left-[20%] w-[600px] h-[600px] rounded-full bg-cyan-500/[0.04] dark:bg-cyan-500/[0.05] blur-[130px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
       {/* ── HERO SECTION ────────────────────────────────────────────────────── */}
-      <section className="relative pt-28 sm:pt-36 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center text-center">
+      <section className="relative pt-12 sm:pt-16 pb-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto flex flex-col items-center text-center">
         <ParticleHero />
 
         {/* Sleek Announcement Pill */}
@@ -159,7 +159,7 @@ export default function HomePage() {
 
         {/* Main Headline */}
         <h1 className="relative z-10 text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.1] max-w-4xl mb-6">
-          Stop Guessing Your Final-Year Project. <br />
+          Stop Guessing Your Final Year Project. <br />
           <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 dark:from-indigo-300 dark:via-cyan-200 dark:to-emerald-300 bg-clip-text text-transparent">
             Choose, Stress-Test &amp; Prove It.
           </span>
@@ -208,7 +208,7 @@ export default function HomePage() {
 
         {/* ── INTERACTIVE LIVE PROJECT ARCHETYPE COMPARATOR ──────────────────── */}
         <div className="relative z-10 w-full max-w-4xl mt-16 rounded-2xl p-6 sm:p-8 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-white/10 shadow-2xl backdrop-blur-xl text-left">
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 border-b border-slate-200 dark:border-white/10 gap-4">
             <div>
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-indigo-600 dark:text-cyan-400 block mb-1">
@@ -218,18 +218,17 @@ export default function HomePage() {
                 Explore Realistic Project Archetypes
               </h3>
             </div>
-            
+
             {/* Archetype Selector Tabs */}
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10">
               {ARCHETYPES.map((arch) => (
                 <button
                   key={arch.id}
                   onClick={() => setSelectedArchetype(arch)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${
-                    selectedArchetype.id === arch.id
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 ${selectedArchetype.id === arch.id
+                    ? "bg-indigo-600 text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    }`}
                 >
                   <span>{arch.icon}</span>
                   <span>{arch.title.split(" ")[0]}</span>
@@ -240,7 +239,7 @@ export default function HomePage() {
 
           {/* Active Archetype Content */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 pt-6 items-start">
-            
+
             {/* Left: Summary */}
             <div className="md:col-span-7 space-y-4">
               <div className="flex items-center justify-between gap-3">

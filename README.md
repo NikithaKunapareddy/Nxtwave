@@ -279,7 +279,7 @@ The prompt states: **Budget ₹2,000 | 7 Days.**
 ### 2. Backend Setup (FastAPI & Jinja2 Templates)
 ```bash
 # Clone the repository
-git clone https://github.com/NikithaKunapareddy/Nxtwave.git
+git clone <repository-url>
 cd Nxtwave
 
 # Create and activate virtual environment

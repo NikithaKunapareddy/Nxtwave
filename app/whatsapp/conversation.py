@@ -79,7 +79,7 @@ async def handle_inbound(inbound: InboundMessage, db: Session) -> None:
     db.commit()
 
     # 7. Send reply
-    base_url = settings.PUBLIC_BASE_URL
+    base_url = settings.FRONTEND_URL or settings.PUBLIC_BASE_URL
     await _send_reply(inbound.wa_id, reply_text, state_before, conv.state, db)
 
 
@@ -91,7 +91,7 @@ async def _handle_global_command(
     body_lower: str, conv: WhatsAppConversationState, db: Session
 ) -> Optional[str]:
     """Return reply text if body is a global command, else None."""
-    base_url = settings.PUBLIC_BASE_URL
+    base_url = settings.FRONTEND_URL or settings.PUBLIC_BASE_URL
 
     if body_lower in ("help", "menu", "hi", "hello", "hii", "hey"):
         return msg.HELP_MESSAGE
@@ -127,7 +127,7 @@ async def _fsm_transition(
     """Returns (reply_text, new_state)."""
     state = conv.state
     ctx = conv.get_context()
-    base_url = settings.PUBLIC_BASE_URL
+    base_url = settings.FRONTEND_URL or settings.PUBLIC_BASE_URL
 
     # ── idle / done ────────────────────────────────────────────────────────────
     if state in ("idle", "done"):

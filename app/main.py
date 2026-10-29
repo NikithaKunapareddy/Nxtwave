@@ -14,6 +14,7 @@ from app.config import settings, BASE_DIR
 from app.database import init_db, get_db, SessionLocal
 from app.models import BuildContract, PeerChallenge
 from app.security import SecurityHeadersMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from app.analytics import seed_sample_growth_data
 from app.supabase_client import (
     supabase_get_contract,
@@ -55,6 +56,25 @@ init_db()
 
 # Attach Security Headers Middleware
 app.add_middleware(SecurityHeadersMiddleware)
+
+# Enable CORS for decoupled frontend deployments (Vercel, local dev, custom domains)
+allowed_origins_env = settings.CORS_ORIGINS
+if allowed_origins_env:
+    allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+else:
+    allowed_origins = ["*"]
+
+if settings.FRONTEND_URL and settings.FRONTEND_URL not in allowed_origins and allowed_origins != ["*"]:
+    allowed_origins.append(settings.FRONTEND_URL)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True if allowed_origins != ["*"] else False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
 
 # Mount Static Files
 static_dir = BASE_DIR / "app" / "static"

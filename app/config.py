@@ -99,6 +99,12 @@ class Settings:
     # Public base URL (required for ngrok/cloud webhook registration)
     PUBLIC_BASE_URL: str = os.getenv("PUBLIC_BASE_URL", "http://127.0.0.1:8000").strip()
 
+    # Frontend URL (e.g. deployed Vercel URL: https://project-compass.vercel.app)
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "").strip()
+
+    # Allowed CORS origins (comma-separated, e.g. https://my-frontend.vercel.app,http://localhost:3000)
+    CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "").strip()
+
     @property
     def is_production(self) -> bool:
         return self.APP_ENV == "production"

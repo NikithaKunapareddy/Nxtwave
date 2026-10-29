@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef, use } from "react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import {
   Copy,
   CheckCircle2,
@@ -103,6 +104,8 @@ export default function ContractPage({
   const resolvedParams = use(params);
   const contractId = resolvedParams.id;
   const { success, error } = useToast();
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const [contract, setContract] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -277,7 +280,7 @@ export default function ContractPage({
         ctx.ellipse(cx, cy + layer, rx, ry, 0, s.startAngle, s.endAngle);
         ctx.lineTo(cx, cy + layer);
         ctx.closePath();
-        ctx.fillStyle = "#1e1b4b";
+        ctx.fillStyle = isDark ? "#1e1b4b" : "#c7d2fe";
         ctx.fill();
       });
     }
@@ -291,7 +294,7 @@ export default function ContractPage({
       ctx.fillStyle = s.color || "#6366f1";
       ctx.fill();
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "#0b1020";
+      ctx.strokeStyle = isDark ? "#0b1020" : "#ffffff";
       ctx.stroke();
 
       const labelRadius = rx * 0.65;
@@ -307,20 +310,20 @@ export default function ContractPage({
     // 3. Center Hole
     ctx.beginPath();
     ctx.ellipse(cx, cy, rx * 0.33, ry * 0.33, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#090e1a";
+    ctx.fillStyle = isDark ? "#090e1a" : "#ffffff";
     ctx.fill();
     ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(99,102,241,0.6)";
+    ctx.strokeStyle = isDark ? "rgba(99,102,241,0.6)" : "rgba(99,102,241,0.3)";
     ctx.stroke();
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = isDark ? "#ffffff" : "#0f172a";
     ctx.font = "900 13px Inter, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("60m", cx, cy - 3);
-    ctx.fillStyle = "#34d399";
+    ctx.fillStyle = isDark ? "#34d399" : "#059669";
     ctx.font = "bold 8px monospace";
     ctx.fillText("TOTAL", cx, cy + 9);
-  }, [activeSlices, activeSlice, pieMode]);
+  }, [activeSlices, activeSlice, pieMode, isDark]);
 
   const copyShareLink = () => {
     const url = typeof window !== "undefined" ? `${window.location.origin}/challenge/${contract?.contract_id || contractId}` : "";
@@ -345,27 +348,29 @@ export default function ContractPage({
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center gap-4">
         <RefreshCw className="w-8 h-8 animate-spin text-indigo-500" />
-        <p className="text-sm text-slate-400 font-medium font-mono">Loading 60-Minute Build Blueprint...</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium font-mono">Loading 60-Minute Build Blueprint...</p>
       </div>
     );
   }
 
   if (!contract) {
     return (
-      <div className="max-w-xl mx-auto my-20 p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xl text-center">
-        <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Blueprint Not Found</h2>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-          Contract ID &quot;{contractId}&quot; could not be located in the database.
-        </p>
-        <Link
-          href="/compare"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition"
-        >
-          <span>Create New Comparison</span>
-        </Link>
+      <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 flex items-center justify-center p-4">
+        <div className="max-w-xl w-full p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xl text-center">
+          <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Blueprint Not Found</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            Contract ID &quot;{contractId}&quot; could not be located in the database.
+          </p>
+          <Link
+            href="/compare"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition shadow-sm"
+          >
+            <span>Create New Comparison</span>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -379,78 +384,79 @@ export default function ContractPage({
   const feasibilityScore = contract.feasibility_score || 88;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 transition-colors">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 font-sans">
       
-      {/* Top Header & Action Bar */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-2">
-            <span>⚡ PROTOTYPE BLUEPRINT LOCKED · SCORE {feasibilityScore}/100</span>
-          </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-            {projectTitle}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-3xl leading-relaxed">
-            <strong className="text-slate-900 dark:text-white">A Build Plan That Leaves Nothing Out:</strong> Required ₹0 local stack, hidden assumptions, concrete failure tests, strict scope limits, and your <strong>exact 60-minute build pie chart</strong>.
-          </p>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={downloadPDF}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 border border-slate-200 dark:border-white/10 text-xs font-semibold transition"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download PDF</span>
-          </button>
-          <button
-            onClick={copyShareLink}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/5 dark:hover:bg-white/10 dark:text-slate-200 border border-slate-200 dark:border-white/10 text-xs font-semibold transition"
-          >
-            <Copy className="w-3.5 h-3.5" />
-            <span>{copied ? "Copied!" : "Copy Link"}</span>
-          </button>
-          <button
-            onClick={shareToWhatsApp}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span>Share WhatsApp</span>
-          </button>
-          <Link
-            href={`/compare?from_contract=${contract.contract_id || contractId}`}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-sm"
-          >
-            <span>🔄 Remix Context</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Main Master Card */}
-      <div className="rounded-3xl p-6 sm:p-9 bg-white dark:bg-gradient-to-b dark:from-slate-950/80 dark:via-slate-900/60 dark:to-slate-950/80 border border-slate-200 dark:border-indigo-500/30 shadow-2xl relative space-y-8">
-        
-        {/* Project Metadata Banner */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-white/10">
+        {/* Top Header & Action Bar */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-white/10">
           <div>
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block mb-1">
-              OFFICIAL BUILD CONTRACT LOCKED · SCORE {feasibilityScore}/100
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-mono font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 mb-2">
+              <span>⚡ PROTOTYPE BLUEPRINT LOCKED · SCORE {feasibilityScore}/100</span>
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
               {projectTitle}
-            </h2>
-            <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-3 flex-wrap">
-              <span>Category: <strong className="text-indigo-600 dark:text-indigo-400">{contract.category}</strong></span>
-              <span>•</span>
-              <span>Target Time: <strong className="text-emerald-600 dark:text-emerald-400">Exactly 60 Minutes</strong></span>
-              <span>•</span>
-              <span>Cloud Budget: <strong className="text-emerald-600 dark:text-emerald-400">₹0 Local CPU</strong></span>
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-3xl leading-relaxed">
+              <strong className="text-slate-900 dark:text-white">A Build Plan That Leaves Nothing Out:</strong> Required ₹0 local stack, hidden assumptions, concrete failure tests, strict scope limits, and your <strong>exact 60-minute build pie chart</strong>.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={downloadPDF}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 text-xs font-semibold transition shadow-sm"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF</span>
+            </button>
+            <button
+              onClick={copyShareLink}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 text-xs font-semibold transition shadow-sm"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              <span>{copied ? "Copied!" : "Copy Link"}</span>
+            </button>
+            <button
+              onClick={shareToWhatsApp}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Share WhatsApp</span>
+            </button>
+            <Link
+              href={`/compare?from_contract=${contract.contract_id || contractId}`}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-sm"
+            >
+              <span>🔄 Remix Context</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Main Master Card */}
+        <div className="rounded-3xl p-6 sm:p-9 bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-indigo-500/30 shadow-2xl relative space-y-8">
+        
+          {/* Project Metadata Banner */}
+          <div className="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-white/10">
+            <div>
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block mb-1">
+                OFFICIAL BUILD CONTRACT LOCKED · SCORE {feasibilityScore}/100
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                {projectTitle}
+              </h2>
+              <div className="text-xs text-slate-600 dark:text-slate-400 mt-1 flex items-center gap-3 flex-wrap">
+                <span>Category: <strong className="text-indigo-600 dark:text-indigo-400">{contract.category}</strong></span>
+                <span>•</span>
+                <span>Target Time: <strong className="text-emerald-600 dark:text-emerald-400">Exactly 60 Minutes</strong></span>
+                <span>•</span>
+                <span>Cloud Budget: <strong className="text-emerald-600 dark:text-emerald-400">₹0 Local CPU</strong></span>
+              </div>
+            </div>
+            <div className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-white/10 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold">
+              ID: {contract.contract_id || contractId}
             </div>
           </div>
-          <div className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/10 font-mono text-xs text-indigo-600 dark:text-indigo-300 font-bold">
-            ID: {contract.contract_id || contractId}
-          </div>
-        </div>
 
         {/* TWO-COLUMN HERO: 6 KEY PILLARS (LEFT) + 60-MIN PIE CHART (RIGHT) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -459,7 +465,7 @@ export default function ContractPage({
           <div className="lg:col-span-7 flex flex-col justify-between gap-3">
             
             {/* Tech Stack */}
-            <a href="#sec1" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
+            <a href="#sec1" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-[#111726] dark:hover:bg-[#161e31] border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
               <span className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                 <Cpu className="w-4 h-4" />
               </span>
@@ -472,7 +478,7 @@ export default function ContractPage({
             </a>
 
             {/* Load-Bearing Assumption */}
-            <a href="#sec2" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
+            <a href="#sec2" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-[#111726] dark:hover:bg-[#161e31] border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
               <span className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                 <AlertTriangle className="w-4 h-4" />
               </span>
@@ -485,7 +491,7 @@ export default function ContractPage({
             </a>
 
             {/* Failure Tests */}
-            <a href="#sec3" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
+            <a href="#sec3" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-[#111726] dark:hover:bg-[#161e31] border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
               <span className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                 <ShieldAlert className="w-4 h-4" />
               </span>
@@ -498,7 +504,7 @@ export default function ContractPage({
             </a>
 
             {/* Scope Boundary */}
-            <a href="#sec4" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
+            <a href="#sec4" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-[#111726] dark:hover:bg-[#161e31] border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
               <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                 <Target className="w-4 h-4" />
               </span>
@@ -511,7 +517,7 @@ export default function ContractPage({
             </a>
 
             {/* 60-Minute Prototype Plan */}
-            <a href="#sec5" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
+            <a href="#sec5" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-[#111726] dark:hover:bg-[#161e31] border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
               <span className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                 <Clock className="w-4 h-4" />
               </span>
@@ -524,7 +530,7 @@ export default function ContractPage({
             </a>
 
             {/* Day-1 Launch Action */}
-            <a href="#sec6" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
+            <a href="#sec6" className="p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 dark:bg-[#111726] dark:hover:bg-[#161e31] border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-all flex items-start gap-3.5 group">
               <span className="w-8 h-8 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-600 dark:text-pink-400 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                 <Zap className="w-4 h-4" />
               </span>
@@ -538,13 +544,13 @@ export default function ContractPage({
           </div>
 
           {/* Right Column: 60-Minute Pie Chart */}
-          <div className="lg:col-span-5 p-5 rounded-2xl bg-slate-950/90 text-white border border-indigo-500/40 flex flex-col justify-between items-center shadow-xl">
+          <div className="lg:col-span-5 p-5 rounded-2xl bg-white dark:bg-[#080d1a] text-slate-900 dark:text-white border border-slate-200 dark:border-indigo-500/40 flex flex-col justify-between items-center shadow-lg dark:shadow-xl">
             <div className="w-full flex justify-between items-center mb-2">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400 block">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
                   EXACTLY 60 MINUTES
                 </span>
-                <h4 className="text-sm font-extrabold text-white">60-Min Build Pie Chart</h4>
+                <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">60-Min Build Pie Chart</h4>
               </div>
               <div className="flex gap-1">
                 <button
@@ -553,7 +559,7 @@ export default function ContractPage({
                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
                     pieMode === "classic5"
                       ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-white/10 text-slate-200 hover:bg-white/20 hover:text-white"
+                      : "bg-slate-100 dark:bg-[#161e31] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1e293b] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-white/10"
                   }`}
                 >
                   Classic 5 (60m)
@@ -564,7 +570,7 @@ export default function ContractPage({
                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
                     pieMode === "detailed"
                       ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-white/10 text-slate-200 hover:bg-white/20 hover:text-white"
+                      : "bg-slate-100 dark:bg-[#161e31] text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#1e293b] hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-white/10"
                   }`}
                 >
                   Detailed 8 (60m)
@@ -578,7 +584,7 @@ export default function ContractPage({
             </div>
 
             {/* Dynamic Legend */}
-            <div className="w-full grid grid-cols-2 gap-1.5 text-[11px] text-slate-300 pt-2 border-t border-white/10">
+            <div className="w-full grid grid-cols-2 gap-1.5 text-[11px] text-slate-600 dark:text-slate-300 pt-2 border-t border-slate-200 dark:border-white/10">
               {activeSlices.map((s, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 truncate">
                   <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
@@ -587,14 +593,14 @@ export default function ContractPage({
               ))}
             </div>
 
-            <div className="w-full text-center mt-3 pt-2 border-t border-white/5 text-[11px] font-mono text-emerald-400 font-bold">
+            <div className="w-full text-center mt-3 pt-2 border-t border-slate-100 dark:border-white/5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
               TOTAL TIME: 60 MINS · ₹0 CLOUD COST
             </div>
           </div>
         </div>
 
         {/* BOTTOM WORKSHOP BAR: 60 MINS = 60 MINS LIVE WORKSHOP */}
-        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-cyan-50 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-900 border-2 border-indigo-200 dark:border-indigo-500/50 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 text-slate-900 dark:text-white">
+        <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-indigo-50 via-purple-50 to-cyan-50 dark:from-[#0b0f1a] dark:via-[#111728] dark:to-[#0b0f1a] border-2 border-indigo-200 dark:border-indigo-500/50 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 text-slate-900 dark:text-white">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-indigo-600 text-white font-black text-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-indigo-600/50">
               60
@@ -630,25 +636,25 @@ export default function ContractPage({
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase block mb-1">Frontend</span>
               <strong className="text-xs text-slate-900 dark:text-white block">{stack.frontend || contract.frontend_rec || "Next.js / HTML5"}</strong>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase block mb-1">Backend</span>
               <strong className="text-xs text-blue-600 dark:text-blue-400 block">{stack.backend || contract.backend_rec || "FastAPI"}</strong>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase block mb-1">AI Model</span>
               <strong className="text-xs text-violet-600 dark:text-violet-400 block">{stack.ai_model || contract.ai_model_rec || "Sentence-Transformers on CPU"}</strong>
             </div>
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white">
               <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase block mb-1">Database</span>
               <strong className="text-xs text-emerald-600 dark:text-emerald-400 block">{stack.database || contract.db_rec || "Local SQLite (₹0)"}</strong>
             </div>
           </div>
           {contract.tech_reasoning && (
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border-l-2 border-indigo-500 text-xs text-slate-700 dark:text-slate-300">
+            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111726] border-l-2 border-indigo-500 text-xs text-slate-700 dark:text-slate-300">
               <strong className="text-slate-900 dark:text-white">Architectural Rationale: </strong>{contract.tech_reasoning}
             </div>
           )}
@@ -688,25 +694,25 @@ export default function ContractPage({
           </div>
           <div className="space-y-3">
             {failureScenarios.map((test: any, i: number) => (
-              <div key={i} className="p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white space-y-2.5">
+              <div key={i} className="p-4 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white space-y-2.5">
                 <div className="flex items-center justify-between">
                   <strong className="text-sm font-bold text-slate-900 dark:text-white">{test.test_name}</strong>
-                  <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-slate-200 dark:bg-white/10 text-indigo-700 dark:text-indigo-300 font-bold">{test.test_id || `TST-0${i + 1}`}</span>
+                  <span className="px-2 py-0.5 rounded font-mono text-[10px] bg-slate-200 dark:bg-[#161e31] text-indigo-700 dark:text-indigo-300 font-bold">{test.test_id || `TST-0${i + 1}`}</span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                  <div className="p-2.5 rounded bg-white dark:bg-black/30 border border-slate-200 dark:border-white/5">
+                  <div className="p-2.5 rounded bg-white dark:bg-[#080d1a] border border-slate-200 dark:border-white/10">
                     <strong className="text-slate-500 dark:text-slate-400 block mb-0.5">What to Test:</strong>
                     <span className="text-slate-800 dark:text-slate-200">{test.what_is_tested}</span>
                   </div>
-                  <div className="p-2.5 rounded bg-white dark:bg-black/30 border border-slate-200 dark:border-white/5">
+                  <div className="p-2.5 rounded bg-white dark:bg-[#080d1a] border border-slate-200 dark:border-white/10">
                     <strong className="text-slate-500 dark:text-slate-400 block mb-0.5">What to Expect:</strong>
                     <span className="text-slate-800 dark:text-slate-200">{test.expected_observation}</span>
                   </div>
-                  <div className="p-2.5 rounded bg-white dark:bg-black/30 border border-slate-200 dark:border-white/5">
+                  <div className="p-2.5 rounded bg-white dark:bg-[#080d1a] border border-slate-200 dark:border-white/10">
                     <strong className="text-emerald-600 dark:text-emerald-400 block mb-0.5">Acceptance Criteria:</strong>
                     <span className="text-slate-800 dark:text-slate-200">{test.acceptance_criteria}</span>
                   </div>
-                  <div className="p-2.5 rounded bg-white dark:bg-black/30 border border-slate-200 dark:border-white/5">
+                  <div className="p-2.5 rounded bg-white dark:bg-[#080d1a] border border-slate-200 dark:border-white/10">
                     <strong className="text-amber-600 dark:text-amber-400 block mb-0.5">How to Fix It:</strong>
                     <span className="text-slate-800 dark:text-slate-200">{test.remediation_plan}</span>
                   </div>
@@ -728,7 +734,7 @@ export default function ContractPage({
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-2">
+            <div className="p-4 rounded-xl bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/20 space-y-2">
               <strong className="text-xs font-bold text-emerald-600 dark:text-emerald-400 block flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>In-Scope (Build in Week 1):</span>
@@ -739,7 +745,7 @@ export default function ContractPage({
                 ))}
               </ul>
             </div>
-            <div className="p-4 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-2">
+            <div className="p-4 rounded-xl bg-rose-500/5 dark:bg-rose-950/20 border border-rose-500/20 space-y-2">
               <strong className="text-xs font-bold text-rose-600 dark:text-rose-400 block flex items-center gap-1.5">
                 <Ban className="w-3.5 h-3.5" />
                 <span>DO NOT Build in Week 1 (Postpone):</span>
@@ -766,7 +772,7 @@ export default function ContractPage({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {planMilestones.map((m: any, i: number) => (
-              <div key={i} className="p-3.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white space-y-1.5">
+              <div key={i} className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white space-y-1.5">
                 <span className="font-mono text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase block">{m.time_window || `Minutes ${i * 15}-${(i + 1) * 15}`}</span>
                 <strong className="text-xs font-bold text-slate-900 dark:text-white block">{m.phase_title}</strong>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed">{m.objective}</p>
@@ -791,8 +797,8 @@ export default function ContractPage({
               Momentum Trigger
             </span>
           </div>
-          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-gradient-to-r dark:from-emerald-500/10 dark:via-teal-500/10 dark:to-indigo-500/10 border border-emerald-200 dark:border-emerald-500/30 text-slate-900 dark:text-white">
-            <strong className="text-xs font-bold text-emerald-700 dark:text-emerald-300 block mb-1">Day-1 Launch Action:</strong>
+          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-[#111726] border border-emerald-200 dark:border-emerald-500/30 text-slate-900 dark:text-white">
+            <strong className="text-xs font-bold text-emerald-700 dark:text-emerald-400 block mb-1">Day-1 Launch Action:</strong>
             <p className="font-mono text-xs text-slate-900 dark:text-white leading-relaxed">{contract.immediate_action}</p>
           </div>
         </div>
@@ -820,17 +826,17 @@ export default function ContractPage({
             </Link>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white space-y-3">
+          <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#111726] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white space-y-3">
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="text"
                 readOnly
                 value={typeof window !== "undefined" ? `${window.location.origin}/challenge/${contract.contract_id || contractId}` : ""}
-                className="flex-1 px-3.5 py-2 rounded-xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 font-mono text-xs text-slate-800 dark:text-slate-200"
+                className="flex-1 px-3.5 py-2 rounded-xl bg-white dark:bg-[#080d1a] border border-slate-200 dark:border-white/10 font-mono text-xs text-slate-800 dark:text-slate-200"
               />
               <button
                 onClick={copyShareLink}
-                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-white/10 dark:hover:bg-white/15 dark:text-white font-semibold text-xs transition"
+                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 dark:bg-[#161e31] dark:hover:bg-[#1e293b] dark:text-white border border-transparent dark:border-white/10 font-semibold text-xs transition"
               >
                 Copy Link
               </button>
@@ -846,5 +852,6 @@ export default function ContractPage({
 
       </div>
     </div>
+  </div>
   );
 }

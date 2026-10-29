@@ -1,10 +1,32 @@
 // Frontend API Client for Project Compass
 
+const LIVE_RENDER_BACKEND = "https://nxtwave-ttys.onrender.com";
+
+export function getApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.trim().replace(/\/+$/, "");
+  }
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    // In production or on Vercel preview/production, connect directly to live Render backend
+    if (host !== "localhost" && host !== "127.0.0.1") {
+      return LIVE_RENDER_BACKEND;
+    }
+  }
+  return "";
+}
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const baseUrl = getApiBaseUrl();
+  const url = endpoint.startsWith("http")
+    ? endpoint
+    : baseUrl
+    ? `${baseUrl}${path}`
+    : path;
 
   const response = await fetch(url, {
     ...options,
@@ -261,4 +283,21 @@ export async function simulateWhatsAppMessage(
 // WhatsApp Status
 export async function getWhatsAppStatus() {
   return apiRequest<any>("/api/whatsapp/status");
+}
+
+// Interactive AI Chat with Project Build Contract
+export async function chatWithContract(
+  contractId: string,
+  message: string,
+  peerName: string = "Classmate"
+) {
+  return apiRequest<{
+    reply: string;
+    is_critique: boolean;
+    model_used?: string;
+    status: string;
+  }>(`/api/contracts/${contractId}/challenges/chat`, {
+    method: "POST",
+    body: JSON.stringify({ message, peer_name: peerName }),
+  });
 }

@@ -53,14 +53,18 @@ export default function AdminPage() {
   const [metrics, setMetrics] = useState<any | null>(null);
   const [resetting, setResetting] = useState(false);
 
-  const fetchMetrics = async (authToken: string) => {
+  const fetchMetrics = async (authToken: string, showToast = false) => {
     try {
       setLoading(true);
       const data = await getAdminMetrics(authToken);
       setMetrics(data);
-      success("Real-time metrics updated");
+      if (showToast) {
+        success("Real-time metrics updated");
+      }
     } catch (err: any) {
-      error(err.message || "Failed to load metrics. Check token.");
+      if (showToast) {
+        error(err.message || "Failed to load metrics. Check token.");
+      }
       // Provide demo metrics fallback if backend is waiting for events
       setMetrics({
         kpis: {
@@ -182,16 +186,16 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
         {/* Header: Clean Flex Row with Title + Controls */}
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/10">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-10 pb-6 border-b border-slate-200 dark:border-white/10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 mb-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
               <span>Live Telemetry &amp; Product Engine</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Sprint Analytics Dashboard
             </h1>
           </div>
@@ -205,14 +209,14 @@ export default function AdminPage() {
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="Admin secret"
-                className="bg-slate-800/60 border border-white/10 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-9 pr-3 py-2.5 w-full text-xs font-mono outline-none transition"
+                className="bg-white dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl pl-9 pr-3 py-2.5 w-full text-xs font-mono outline-none transition shadow-sm dark:shadow-none"
               />
             </div>
 
             <button
-              onClick={() => fetchMetrics(token)}
+              onClick={() => fetchMetrics(token, true)}
               disabled={loading}
-              className="inline-flex items-center justify-center p-2.5 rounded-xl border border-white/10 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white transition cursor-pointer"
+              className="inline-flex items-center justify-center p-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-sm dark:shadow-none"
               title="Refresh telemetry"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -221,7 +225,7 @@ export default function AdminPage() {
             <button
               onClick={handleResetData}
               disabled={resetting}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-semibold transition cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 text-xs font-semibold transition cursor-pointer"
               title="Reset to default seed data"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${resetting ? "animate-spin" : ""}`} />
@@ -237,7 +241,7 @@ export default function AdminPage() {
             return (
               <div
                 key={idx}
-                className="relative rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-xl p-5 overflow-hidden transition-all hover:border-white/20 hover:-translate-y-0.5"
+                className="relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 backdrop-blur-xl p-5 overflow-hidden transition-all hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-0.5 shadow-sm dark:shadow-none"
               >
                 <div className="flex items-center justify-between mb-3">
                   <div
@@ -246,10 +250,10 @@ export default function AdminPage() {
                     <Icon className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   {item.value}
                 </div>
-                <div className="text-xs font-medium text-slate-400 mt-1 truncate">
+                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 truncate">
                   {item.label}
                 </div>
               </div>
@@ -260,15 +264,15 @@ export default function AdminPage() {
         {/* Funnel & Tables Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left: Conversion Funnel with Tapering-Width Bars */}
-          <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 shadow-xl">
-            <div className="flex items-center justify-between mb-6 pb-3 border-b border-white/5">
+          <div className="lg:col-span-5 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 shadow-lg dark:shadow-xl">
+            <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100 dark:border-white/5">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-indigo-400" />
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                <Activity className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                   Conversion Funnel
                 </h2>
               </div>
-              <span className="text-[11px] font-mono text-slate-400">
+              <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
                 End-to-End Velocity
               </span>
             </div>
@@ -281,19 +285,19 @@ export default function AdminPage() {
                 return (
                   <div key={i} className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-slate-300">
+                      <span className="font-medium text-slate-700 dark:text-slate-300">
                         {step.stage}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-white font-semibold">
+                        <span className="font-mono text-slate-900 dark:text-white font-semibold">
                           {step.count}
                         </span>
-                        <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                           {step.conversion}
                         </span>
                       </div>
                     </div>
-                    <div className="w-full h-2 rounded-full bg-slate-800/80 overflow-hidden p-0.5">
+                    <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800/80 overflow-hidden p-0.5 border border-slate-200/50 dark:border-transparent">
                       <div
                         className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 rounded-full transition-all duration-700"
                         style={{ width: `${taperingWidth}%` }}
@@ -308,17 +312,17 @@ export default function AdminPage() {
           {/* Right: Recent Contracts & Registrations Tables */}
           <div className="lg:col-span-7 space-y-6">
             {/* Recent Contracts Table */}
-            <div className="rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 shadow-xl">
-              <div className="flex items-center justify-between mb-5 pb-3 border-b border-white/5">
+            <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 shadow-lg dark:shadow-xl">
+              <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 dark:border-white/5">
                 <div className="flex items-center gap-2">
-                  <FileCheck2 className="w-4 h-4 text-cyan-400" />
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                  <FileCheck2 className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                     Recent Build Contracts
                   </h2>
                 </div>
                 <Link
                   href="/contract/bc_demo_rag"
-                  className="text-xs text-indigo-400 hover:text-indigo-300 inline-flex items-center gap-1 font-medium transition"
+                  className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 inline-flex items-center gap-1 font-medium transition"
                 >
                   <span>Demo Blueprint</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -328,30 +332,30 @@ export default function AdminPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-white/10 text-slate-400">
+                    <tr className="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400">
                       <th className="pb-3 font-semibold uppercase tracking-wider text-[11px]">Contract</th>
                       <th className="pb-3 font-semibold uppercase tracking-wider text-[11px]">Project Title</th>
                       <th className="pb-3 font-semibold uppercase tracking-wider text-[11px]">Archetype</th>
                       <th className="pb-3 font-semibold uppercase tracking-wider text-[11px] text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                     {(metrics?.recent_contracts || []).map((c: any, i: number) => {
                       const style = ARCHETYPE_STYLES[c.archetype] || {
-                        bg: "bg-slate-800",
-                        text: "text-slate-300",
-                        border: "border-white/10",
+                        bg: "bg-slate-100 dark:bg-slate-800",
+                        text: "text-slate-700 dark:text-slate-300",
+                        border: "border-slate-200 dark:border-white/10",
                       };
 
                       return (
                         <tr
                           key={i}
-                          className="even:bg-white/[0.02] odd:bg-transparent hover:bg-white/[0.05] transition-colors"
+                          className="even:bg-slate-50/50 dark:even:bg-white/[0.02] odd:bg-transparent hover:bg-slate-100/60 dark:hover:bg-white/[0.05] transition-colors"
                         >
-                          <td className="py-3 font-mono font-medium text-indigo-400">
+                          <td className="py-3 font-mono font-medium text-indigo-600 dark:text-indigo-400">
                             {c.contract_id}
                           </td>
-                          <td className="py-3 font-medium text-white max-w-[200px] truncate">
+                          <td className="py-3 font-medium text-slate-900 dark:text-white max-w-[200px] truncate">
                             {c.project_name}
                           </td>
                           <td className="py-3">
@@ -364,7 +368,7 @@ export default function AdminPage() {
                           <td className="py-3 text-right">
                             <Link
                               href={`/contract/${c.contract_id}`}
-                              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-300 hover:text-white transition"
+                              className="inline-flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white transition"
                             >
                               <span>Inspect</span>
                               <ExternalLink className="w-3 h-3 text-slate-400" />
@@ -380,15 +384,15 @@ export default function AdminPage() {
 
             {/* Recent Registrations Table if available */}
             {metrics?.recent_registrations && metrics.recent_registrations.length > 0 && (
-              <div className="rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 shadow-xl">
-                <div className="flex items-center justify-between mb-5 pb-3 border-b border-white/5">
+              <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 shadow-lg dark:shadow-xl">
+                <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-100 dark:border-white/5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                       Recent Workshop Signups
                     </h2>
                   </div>
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
                     Latest Cohort
                   </span>
                 </div>
@@ -396,26 +400,26 @@ export default function AdminPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-white/10 text-slate-400">
+                      <tr className="border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400">
                         <th className="pb-3 font-semibold uppercase tracking-wider text-[11px]">Name</th>
                         <th className="pb-3 font-semibold uppercase tracking-wider text-[11px]">Email</th>
                         <th className="pb-3 font-semibold uppercase tracking-wider text-[11px]">Selected Track</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                       {metrics.recent_registrations.map((r: any, i: number) => (
                         <tr
                           key={i}
-                          className="even:bg-white/[0.02] odd:bg-transparent hover:bg-white/[0.05] transition-colors"
+                          className="even:bg-slate-50/50 dark:even:bg-white/[0.02] odd:bg-transparent hover:bg-slate-100/60 dark:hover:bg-white/[0.05] transition-colors"
                         >
-                          <td className="py-3 font-medium text-white">
+                          <td className="py-3 font-medium text-slate-900 dark:text-white">
                             {r.full_name || r.name || "Student Participant"}
                           </td>
-                          <td className="py-3 text-slate-400 font-mono">
+                          <td className="py-3 text-slate-500 dark:text-slate-400 font-mono">
                             {r.email || r.masked_email || r.email_masked || "***"}
                           </td>
                           <td className="py-3">
-                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20">
                               {r.track || "60-Min Build Prototype"}
                             </span>
                           </td>

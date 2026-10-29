@@ -67,6 +67,51 @@ const PRESETS = [
 
 const CARD_BADGES = ["A", "B", "C"];
 
+const ARCHETYPE_PAIRS: Record<string, IdeaInput[]> = {
+  rag: [
+    {
+      name: "College Policy RAG Assistant",
+      description: "Indexes university circulars and handbooks to answer student questions locally with zero API fees.",
+      target_audience: "College students and faculty",
+      tech_stack: "FastAPI, Sentence-Transformers, SQLite, CPU",
+    },
+    {
+      name: "Generic Web Search FAQ Scraper",
+      description: "Scrapes public college websites on-the-fly and runs unstructured keyword search over HTML.",
+      target_audience: "Prospective applicants and visitors",
+      tech_stack: "Python, BeautifulSoup, Flask, SQLite",
+    },
+  ],
+  vision: [
+    {
+      name: "Crop Leaf Disease Classifier",
+      description: "Lightweight MobileNet CNN classifying leaf lesions and suggesting organic remediation steps.",
+      target_audience: "Smallholder farmers and agronomists",
+      tech_stack: "PyTorch, MobileNetV2, OpenCV, FastAPI",
+    },
+    {
+      name: "Manual Farm Inspection Spreadsheet",
+      description: "Manual mobile form logging crop symptoms for delayed offline expert manual review.",
+      target_audience: "Agricultural field workers",
+      tech_stack: "React, Google Sheets API, Node.js",
+    },
+  ],
+  tabular: [
+    {
+      name: "Placement Package Predictor",
+      description: "Gradient boosting model predicting placement readiness and package brackets from coding metrics.",
+      target_audience: "Final-year college job applicants",
+      tech_stack: "Scikit-Learn, XGBoost, FastAPI, Pandas",
+    },
+    {
+      name: "Manual Resume Word Cloud Highlighter",
+      description: "Basic regex keyword counter matching resume text against generic job descriptions.",
+      target_audience: "Campus placement coordinators",
+      tech_stack: "Python, NLTK, Streamlit",
+    },
+  ],
+};
+
 export default function ComparePage() {
   const router = useRouter();
   const { success, error } = useToast();
@@ -96,7 +141,12 @@ export default function ComparePage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const fc = params.get("from_contract");
-      if (fc) {
+      const fa = params.get("from_archetype");
+
+      if (fa && ARCHETYPE_PAIRS[fa]) {
+        setIdeas(ARCHETYPE_PAIRS[fa]);
+        success(`Loaded benchmark pair for ${ARCHETYPE_PAIRS[fa][0].name}`);
+      } else if (fc) {
         setSourceContractId(fc);
         import("@/lib/api").then(({ getContract }) => {
           getContract(fc)
@@ -160,6 +210,10 @@ export default function ComparePage() {
     for (let i = 0; i < ideas.length; i++) {
       if (!ideas[i].name.trim() || !ideas[i].description.trim()) {
         error(`Please fill in both name and description for Idea ${CARD_BADGES[i]}`);
+        return;
+      }
+      if (ideas[i].description.trim().length < 10) {
+        error(`Description for Idea ${CARD_BADGES[i]} must be at least 10 characters long`);
         return;
       }
     }
@@ -235,20 +289,18 @@ export default function ComparePage() {
   const winnerScore = result?.winner?.overall_score || result?.winner?.score || 89;
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         {/* Page Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4 backdrop-blur-sm">
-            <Layers className="w-3.5 h-3.5 text-indigo-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 mb-4 backdrop-blur-sm">
+            <Layers className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
             <span>Deterministic Decision Engine</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4">
-            <span className="bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-              Compare Project Concepts
-            </span>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4 text-slate-900 dark:text-white">
+            Compare Project Concepts
           </h1>
-          <p className="text-base sm:text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
             Benchmark candidate architectures side-by-side. Objectively scored across
             Feasibility, 48-Hour Scope Viability, and Market Traction.
           </p>
@@ -256,23 +308,23 @@ export default function ComparePage() {
 
         {/* Friend Context Loaded Banner */}
         {sourceContractId && (
-          <div className="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-cyan-500/10 p-5 mb-8 backdrop-blur-md">
+          <div className="relative overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-500/30 bg-gradient-to-r from-purple-50 via-indigo-50 to-cyan-50 dark:from-purple-500/10 dark:via-indigo-500/10 dark:to-cyan-500/10 p-5 mb-8 backdrop-blur-md">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-400 block mb-1">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 block mb-1">
                   Shared Blueprint Context ({sourceContractId})
                 </span>
-                <h4 className="text-sm font-semibold text-white">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                   Friend&apos;s project seeded into Idea A
                 </h4>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                   Refine their parameters or enter your own concept in Idea B to determine the superior build.
                 </p>
               </div>
               <div className="flex items-center gap-2.5">
                 <Link
                   href={`/contract/${sourceContractId}`}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/10 transition whitespace-nowrap"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white dark:bg-white/10 hover:bg-slate-100 dark:hover:bg-white/15 text-slate-800 dark:text-white border border-slate-200 dark:border-white/10 transition whitespace-nowrap shadow-sm"
                 >
                   View Blueprint
                 </Link>
@@ -288,9 +340,9 @@ export default function ComparePage() {
         )}
 
         {/* Preset Quick Fill Bar */}
-        <div className="glass-panel rounded-2xl p-3 sm:p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-3 border border-white/10">
-          <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
-            <Lightbulb className="w-4 h-4 text-amber-400" />
+        <div className="glass-panel rounded-2xl p-3 sm:p-4 mb-8 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-white/10">
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+            <Lightbulb className="w-4 h-4 text-amber-500 dark:text-amber-400" />
             <span>Preset Scenarios:</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -299,7 +351,7 @@ export default function ComparePage() {
                 key={i}
                 type="button"
                 onClick={() => loadPreset(p)}
-                className="text-xs px-3.5 py-1.5 rounded-full border border-white/10 bg-slate-900/60 hover:bg-slate-800/80 hover:border-indigo-500/40 text-slate-300 hover:text-white font-medium transition cursor-pointer"
+                className="text-xs px-3.5 py-1.5 rounded-full border border-slate-200 dark:border-white/10 bg-white hover:bg-slate-100 dark:bg-slate-900/60 dark:hover:bg-slate-800/80 hover:border-indigo-500/40 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white font-medium transition cursor-pointer shadow-sm"
               >
                 {p.label}
               </button>
@@ -313,15 +365,15 @@ export default function ComparePage() {
             {ideas.map((idea, idx) => (
               <div
                 key={idx}
-                className="relative rounded-2xl border border-white/10 bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 flex flex-col justify-between overflow-hidden before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-indigo-500/50 before:via-purple-500/40 before:to-cyan-500/50 transition-all hover:border-white/20"
+                className="relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 backdrop-blur-xl p-6 sm:p-7 flex flex-col justify-between overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none before:absolute before:top-0 before:left-0 before:right-0 before:h-[2px] before:bg-gradient-to-r before:from-indigo-500/50 before:via-purple-500/40 before:to-cyan-500/50 transition-all hover:border-indigo-400/50 dark:hover:border-white/20"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2.5">
-                      <span className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xs font-bold font-mono">
+                      <span className="w-7 h-7 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/20 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xs font-bold font-mono">
                         {CARD_BADGES[idx]}
                       </span>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                         Concept {CARD_BADGES[idx]}
                       </span>
                     </div>
@@ -330,7 +382,7 @@ export default function ComparePage() {
                       <button
                         type="button"
                         onClick={removeThirdIdea}
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-amber-400 hover:bg-amber-400/10 transition"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-amber-400/10 transition"
                         title="Remove Idea C"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -341,7 +393,7 @@ export default function ComparePage() {
                   <div className="space-y-4">
                     {/* Project Name */}
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         Project Name *
                       </label>
                       <input
@@ -350,13 +402,13 @@ export default function ComparePage() {
                         placeholder="e.g. AI Customer Support Agent"
                         value={idea.name}
                         onChange={(e) => handleIdeaChange(idx, "name", e.target.value)}
-                        className="bg-slate-800/60 border border-white/10 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 w-full text-sm outline-none transition"
+                        className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 rounded-xl px-4 py-3 w-full text-sm outline-none transition"
                       />
                     </div>
 
                     {/* Concept Description */}
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         Mechanism & Architecture *
                       </label>
                       <textarea
@@ -365,13 +417,13 @@ export default function ComparePage() {
                         placeholder="What problem does it solve and what is the primary technical workflow?"
                         value={idea.description}
                         onChange={(e) => handleIdeaChange(idx, "description", e.target.value)}
-                        className="bg-slate-800/60 border border-white/10 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 w-full text-sm outline-none transition resize-none"
+                        className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 rounded-xl px-4 py-3 w-full text-sm outline-none transition resize-none"
                       />
                     </div>
 
                     {/* Target Audience */}
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         Target Audience
                       </label>
                       <input
@@ -379,13 +431,13 @@ export default function ComparePage() {
                         placeholder="e.g. CS students, B2B sales teams"
                         value={idea.target_audience}
                         onChange={(e) => handleIdeaChange(idx, "target_audience", e.target.value)}
-                        className="bg-slate-800/60 border border-white/10 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 w-full text-sm outline-none transition"
+                        className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 rounded-xl px-4 py-3 w-full text-sm outline-none transition"
                       />
                     </div>
 
                     {/* Tech Stack */}
                     <div>
-                      <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">
+                      <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                         Tech Stack
                       </label>
                       <input
@@ -393,7 +445,7 @@ export default function ComparePage() {
                         placeholder="e.g. Next.js, FastAPI, SQLite, OpenAI"
                         value={idea.tech_stack}
                         onChange={(e) => handleIdeaChange(idx, "tech_stack", e.target.value)}
-                        className="bg-slate-800/60 border border-white/10 text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 w-full text-sm outline-none transition"
+                        className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 rounded-xl px-4 py-3 w-full text-sm outline-none transition"
                       />
                     </div>
                   </div>
@@ -408,9 +460,9 @@ export default function ComparePage() {
               <button
                 type="button"
                 onClick={addThirdIdea}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-sm font-medium text-slate-300 hover:text-white transition cursor-pointer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-sm"
               >
-                <Plus className="w-4 h-4 text-indigo-400" />
+                <Plus className="w-4 h-4 text-indigo-500" />
                 <span>Add Candidate Idea C</span>
               </button>
             ) : (
@@ -441,35 +493,35 @@ export default function ComparePage() {
         {result && (
           <div className="mt-16 space-y-8 animate-in fade-in-50 duration-500">
             {/* Winner Banner */}
-            <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/20 via-slate-900/80 to-indigo-950/30 backdrop-blur-2xl p-8 sm:p-10 relative overflow-hidden shadow-2xl">
+            <div className="rounded-3xl border border-emerald-300 dark:border-emerald-500/30 bg-gradient-to-br from-emerald-50 via-teal-50 to-indigo-50 dark:from-emerald-950/20 dark:via-slate-900/80 dark:to-indigo-950/30 backdrop-blur-2xl p-8 sm:p-10 relative overflow-hidden shadow-2xl">
               <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
                 <div className="space-y-3 max-w-2xl">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                    <Trophy className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                     <span>RECOMMENDED BUILD ARCHETYPE</span>
                   </div>
-                  <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                     {result.winner?.name}
                   </h2>
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                  <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
                     {result.winner?.reasoning ||
                       "Optimal balance of technical feasibility, tight 48-hour execution scope, and high market demand."}
                   </p>
                 </div>
 
                 {/* Score Circular Badge */}
-                <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-black/40 border border-white/10 text-center min-w-[160px]">
+                <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 text-center min-w-[160px] shadow-sm">
                   <div className="relative w-24 h-24 flex items-center justify-center">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                       <path
-                        className="text-white/10"
+                        className="text-slate-200 dark:text-white/10"
                         strokeWidth="3"
                         stroke="currentColor"
                         fill="none"
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                       />
                       <path
-                        className="text-emerald-400"
+                        className="text-emerald-500 dark:text-emerald-400"
                         strokeDasharray={`${winnerScore}, 100`}
                         strokeWidth="3"
                         strokeLinecap="round"
@@ -479,27 +531,27 @@ export default function ComparePage() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-black text-white">{winnerScore}</span>
-                      <span className="text-[10px] text-slate-400 font-medium">/ 100</span>
+                      <span className="text-2xl font-black text-slate-900 dark:text-white">{winnerScore}</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">/ 100</span>
                     </div>
                   </div>
-                  <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-400 mt-2">
+                  <span className="text-[11px] uppercase font-bold tracking-wider text-emerald-600 dark:text-emerald-400 mt-2">
                     Overall Index
                   </span>
                 </div>
               </div>
 
               {/* Action Banner inside Winner Box */}
-              <div className="relative z-10 mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-xs text-slate-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className="relative z-10 mt-8 pt-6 border-t border-emerald-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>Lock in this winner as a formal 60-Minute Build Contract with milestones.</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleGenerateContract}
                   disabled={generatingContract}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20 transition hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                 >
                   {generatingContract ? (
                     <>
@@ -530,37 +582,37 @@ export default function ComparePage() {
                     key={i}
                     className={`rounded-2xl border p-6 flex flex-col justify-between backdrop-blur-xl transition ${
                       isWinner
-                        ? "border-emerald-500/40 bg-slate-900/80 shadow-lg shadow-emerald-500/5"
-                        : "border-white/10 bg-slate-900/50"
+                        ? "border-emerald-400 dark:border-emerald-500/40 bg-white dark:bg-slate-900/80 shadow-lg shadow-emerald-500/5"
+                        : "border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/50 shadow-md dark:shadow-none"
                     }`}
                   >
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-mono font-semibold text-slate-400 uppercase">
+                        <span className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 uppercase">
                           Concept {CARD_BADGES[i] || `${i + 1}`}
                         </span>
                         {isWinner && (
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                             WINNER
                           </span>
                         )}
                       </div>
 
-                      <h3 className="text-lg font-bold text-white mb-5 line-clamp-2">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5 line-clamp-2">
                         {ev.name}
                       </h3>
 
                       {/* Clean Metric Bars */}
                       <div className="space-y-3.5 mb-6">
                         <div>
-                          <div className="flex justify-between text-xs font-medium text-slate-300 mb-1.5">
+                          <div className="flex justify-between text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                             <span className="flex items-center gap-1.5">
-                              <Zap className="w-3.5 h-3.5 text-indigo-400" />
+                              <Zap className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
                               <span>Feasibility (48h)</span>
                             </span>
-                            <span className="font-semibold text-white">{feasibility}%</span>
+                            <span className="font-semibold text-slate-900 dark:text-white">{feasibility}%</span>
                           </div>
-                          <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                          <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                             <div
                               className="h-full bg-indigo-500 rounded-full transition-all duration-700"
                               style={{ width: `${feasibility}%` }}
@@ -569,14 +621,14 @@ export default function ComparePage() {
                         </div>
 
                         <div>
-                          <div className="flex justify-between text-xs font-medium text-slate-300 mb-1.5">
+                          <div className="flex justify-between text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                             <span className="flex items-center gap-1.5">
-                              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                              <Sparkles className="w-3.5 h-3.5 text-purple-500 dark:text-purple-400" />
                               <span>Uniqueness</span>
                             </span>
-                            <span className="font-semibold text-white">{uniqueness}%</span>
+                            <span className="font-semibold text-slate-900 dark:text-white">{uniqueness}%</span>
                           </div>
-                          <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                          <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                             <div
                               className="h-full bg-purple-500 rounded-full transition-all duration-700"
                               style={{ width: `${uniqueness}%` }}
@@ -585,16 +637,16 @@ export default function ComparePage() {
                         </div>
 
                         <div>
-                          <div className="flex justify-between text-xs font-medium text-slate-300 mb-1.5">
+                          <div className="flex justify-between text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                             <span className="flex items-center gap-1.5">
-                              <Target className="w-3.5 h-3.5 text-cyan-400" />
+                              <Target className="w-3.5 h-3.5 text-cyan-500 dark:text-cyan-400" />
                               <span>Market Demand</span>
                             </span>
-                            <span className="font-semibold text-white">{market}%</span>
+                            <span className="font-semibold text-slate-900 dark:text-white">{market}%</span>
                           </div>
-                          <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                          <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                             <div
-                              className="h-full bg-cyan-400 rounded-full transition-all duration-700"
+                              className="h-full bg-cyan-500 rounded-full transition-all duration-700"
                               style={{ width: `${market}%` }}
                             />
                           </div>
@@ -604,15 +656,15 @@ export default function ComparePage() {
                       {/* Strengths and Blindspots */}
                       <div className="space-y-2.5 text-xs">
                         {ev.strengths && (
-                          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">
-                            <span className="font-semibold block mb-0.5 text-emerald-400">Core Strength:</span>
+                          <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300">
+                            <span className="font-semibold block mb-0.5 text-emerald-700 dark:text-emerald-400">Core Strength:</span>
                             {Array.isArray(ev.strengths) ? ev.strengths[0] : ev.strengths}
                           </div>
                         )}
 
                         {ev.blindspots && (
-                          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300">
-                            <span className="font-semibold block mb-0.5 text-amber-400">Critical Risk:</span>
+                          <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300">
+                            <span className="font-semibold block mb-0.5 text-amber-700 dark:text-amber-400">Critical Risk:</span>
                             {Array.isArray(ev.blindspots) ? ev.blindspots[0] : ev.blindspots}
                           </div>
                         )}

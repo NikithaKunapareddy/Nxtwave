@@ -161,7 +161,7 @@ def simulate_whatsapp_interaction(
     Used by the /whatsapp web page simulator.
     """
     clean_msg = sanitize_string(sim_in.message)
-    base_url = str(req.base_url).rstrip("/")
+    base_url = (settings.FRONTEND_URL or str(req.base_url)).rstrip("/")
 
     req_obj = ProjectComparisonRequest(
         domain=sim_in.domain or "AI/ML",

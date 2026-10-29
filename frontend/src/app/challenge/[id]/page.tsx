@@ -21,7 +21,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { getContract, trackAnalyticsEvent } from "@/lib/api";
+import { getContract, trackAnalyticsEvent, chatWithContract } from "@/lib/api";
 import { useToast } from "@/components/ui/ToastContext";
 
 interface ChatMessage {
@@ -253,6 +253,8 @@ export default function ChallengePage({
       return item;
     });
 
+    const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
     // 1. 3D Extrusion
     for (let layer = depth; layer >= 1; layer--) {
       computed.forEach((s) => {
@@ -260,7 +262,7 @@ export default function ChallengePage({
         ctx.ellipse(cx, cy + layer, rx, ry, 0, s.startAngle, s.endAngle);
         ctx.lineTo(cx, cy + layer);
         ctx.closePath();
-        ctx.fillStyle = "#1e1b4b";
+        ctx.fillStyle = isDark ? "#1e1b4b" : "#c7d2fe";
         ctx.fill();
       });
     }
@@ -274,7 +276,7 @@ export default function ChallengePage({
       ctx.fillStyle = s.color;
       ctx.fill();
       ctx.lineWidth = 1.2;
-      ctx.strokeStyle = "#070a13";
+      ctx.strokeStyle = isDark ? "#070a13" : "#ffffff";
       ctx.stroke();
 
       const labelRadius = rx * 0.65;
@@ -290,17 +292,17 @@ export default function ChallengePage({
     // 3. Center Hole
     ctx.beginPath();
     ctx.ellipse(cx, cy, rx * 0.35, ry * 0.35, 0, 0, Math.PI * 2);
-    ctx.fillStyle = "#070a13";
+    ctx.fillStyle = isDark ? "#070a13" : "#ffffff";
     ctx.fill();
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = "rgba(99, 102, 241, 0.5)";
+    ctx.strokeStyle = isDark ? "rgba(99, 102, 241, 0.5)" : "rgba(99, 102, 241, 0.3)";
     ctx.stroke();
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = isDark ? "#ffffff" : "#0f172a";
     ctx.font = "bold 11px Inter, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("60m", cx, cy - 2);
-    ctx.fillStyle = "#34d399";
+    ctx.fillStyle = isDark ? "#34d399" : "#059669";
     ctx.font = "bold 7px monospace";
     ctx.fillText("TOTAL", cx, cy + 8);
   }, [contract]);
@@ -322,15 +324,7 @@ export default function ChallengePage({
     setSending(true);
 
     try {
-      const res = await fetch(`/api/contracts/${contractId}/challenges/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg.trim(), peer_name: "Classmate" }),
-      });
-
-      if (!res.ok) throw new Error("Chat request failed");
-
-      const data = await res.json();
+      const data = await chatWithContract(contractId, msg.trim(), "Classmate");
       const botEntry: ChatMessage = {
         id: `b_${Date.now()}`,
         sender: "bot",
@@ -417,7 +411,7 @@ export default function ChallengePage({
           </div>
         </div>
         <Link
-          href="/"
+          href="/compare"
           className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-emerald-500/25 transition whitespace-nowrap text-center active:scale-95 flex-shrink-0"
         >
           <span>🚀 Test My Idea Free →</span>
@@ -451,7 +445,7 @@ export default function ChallengePage({
             </div>
 
             <Link
-              href="/"
+              href="/compare"
               className="px-3 py-1.5 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition whitespace-nowrap hidden sm:inline-block"
             >
               Test My Own Idea 🚀
@@ -637,27 +631,27 @@ export default function ChallengePage({
             </div>
 
             {/* 3D 60-Minute Canvas Pie Chart */}
-            <div className="p-4 rounded-2xl bg-slate-950 text-white border border-indigo-500/30 shadow-lg space-y-3">
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-950 text-slate-900 dark:text-white border border-slate-200 dark:border-indigo-500/30 shadow-md dark:shadow-lg space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-slate-300">
+                <span className="text-xs font-mono font-bold text-slate-700 dark:text-slate-300">
                   60-Minute Prototype Plan
                 </span>
-                <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
                   TOTAL: 60 MINS
                 </span>
               </div>
 
               <div className="flex justify-center items-center py-2">
-                <canvas ref={canvasRef} width="320" height="210" className="max-w-full h-auto drop-shadow-2xl" />
+                <canvas ref={canvasRef} width="320" height="210" className="max-w-full h-auto drop-shadow-xl" />
               </div>
 
               {/* Slices Legend */}
-              <div className="grid grid-cols-2 gap-2 text-[11px] pt-2 border-t border-white/10">
+              <div className="grid grid-cols-2 gap-2 text-[11px] pt-2 border-t border-slate-200 dark:border-white/10">
                 {DEFAULT_SLICES.map((s, i) => (
                   <div key={i} className="flex items-center gap-1.5">
                     <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: s.color }} />
-                    <span className="text-slate-300 truncate">{s.title}</span>
-                    <span className="font-mono text-slate-400 ml-auto">{s.minutes}m</span>
+                    <span className="text-slate-600 dark:text-slate-300 truncate">{s.title}</span>
+                    <span className="font-mono text-slate-500 dark:text-slate-400 ml-auto">{s.minutes}m</span>
                   </div>
                 ))}
               </div>

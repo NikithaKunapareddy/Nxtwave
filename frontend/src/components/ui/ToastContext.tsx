@@ -53,10 +53,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             className={`pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md transition-all duration-300 animate-in slide-in-from-bottom-5 ${
               t.type === "success"
-                ? "bg-emerald-500/10 dark:bg-emerald-950/80 border-emerald-500/30 text-emerald-700 dark:text-emerald-300"
+                ? "bg-white/95 dark:bg-slate-900/95 border-emerald-500/40 text-emerald-800 dark:text-emerald-300 shadow-emerald-500/10"
                 : t.type === "error"
-                ? "bg-red-500/10 dark:bg-red-950/80 border-red-500/30 text-red-700 dark:text-red-300"
-                : "bg-indigo-500/10 dark:bg-indigo-950/80 border-indigo-500/30 text-indigo-700 dark:text-indigo-300"
+                ? "bg-white/95 dark:bg-slate-900/95 border-red-500/40 text-red-800 dark:text-red-300 shadow-red-500/10"
+                : "bg-white/95 dark:bg-slate-900/95 border-indigo-500/40 text-indigo-800 dark:text-indigo-300 shadow-indigo-500/10"
             }`}
           >
             <div className="flex items-center gap-3">
